@@ -1,1 +1,1 @@
-# project-root
+# automated-ci-cd-flask-app
