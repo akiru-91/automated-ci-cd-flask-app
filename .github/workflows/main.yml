@@ -45,6 +45,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Set up Kubectl
       uses: azure/setup-kubectl@v3
       with:
@@ -59,4 +62,6 @@ jobs:
         kubectl apply -f k8s/service.yaml
 
     - name: Verify Deployment
-      run: kubectl get pods
+      run: |
+        kubectl get pods
+        kubectl get services
