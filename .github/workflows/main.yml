@@ -48,16 +48,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
     - name: Set up Kubectl
       uses: azure/setup-kubectl@v3
       with:
         version: 'latest'
 
     - name: Authenticate with Kubernetes Cluster
-      run: echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
+      run: |
+        mkdir -p ~/.kube  # Ensure the .kube directory exists
+        echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config  # Write the Kubeconfig
 
     - name: List files in k8s/
-      run: ls -R k8s/
+      run: |
+        echo "Listing files in k8s/ directory"
+        ls -R k8s/
 
     - name: Deploy to Kubernetes
       run: |
