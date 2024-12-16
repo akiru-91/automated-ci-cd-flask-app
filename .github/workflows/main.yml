@@ -3,69 +3,73 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - master  # Trigger pipeline on push to master branch
+      - master
 
 jobs:
   test:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
-
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the code
+      uses: actions/checkout@v3
+
+    - name: List files in the repository
+      run: ls -R
 
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'  # Setup Python version for the project
+        python-version: '3.9'
 
     - name: Install dependencies
-      run: pip install -r requirements.txt  # Install Python dependencies
+      run: pip install -r requirements.txt
 
     - name: Run tests
-      run: pytest src/  # Run tests using pytest
+      run: pytest src/
 
   build:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
-    needs: test  # Build job depends on the test job
-
+    runs-on: ubuntu-latest
+    needs: test
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the code
+      uses: actions/checkout@v3
 
     - name: Log in to Docker Hub
-      uses: docker/login-action@v2  # Login to Docker Hub
+      uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}  # Docker username
-        password: ${{ secrets.DOCKER_PASSWORD }}  # Docker password
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push Docker image
       run: |
-        docker build -t akiru091/flask-app:latest .  # Build the Docker image
-        docker push akiru091/flask-app:latest  # Push the Docker image to Docker Hub
+        docker build -t akiru091/flask-app:latest .
+        docker push akiru091/flask-app:latest
 
   deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu runner
-    needs: build  # Deploy job depends on build job
-
+    runs-on: ubuntu-latest
+    needs: build
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3  # Checkout the code
+      uses: actions/checkout@v3
 
     - name: Set up Kubectl
-      uses: azure/setup-kubectl@v3  # Install kubectl
+      uses: azure/setup-kubectl@v3
       with:
-        version: 'latest'  # Use the latest version of kubectl
+        version: 'latest'
 
     - name: Authenticate with Kubernetes Cluster
       run: |
         mkdir -p ~/.kube  # Ensure the .kube directory exists
-        echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 --decode > ~/.kube/config  # Decode and write kubeconfig
+        echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 -d > ~/.kube/config  # Decode and save kubeconfig
 
+    - name: List files in k8s/
+      run: |
+        echo "Listing files in k8s/ directory"
+        ls -R k8s/
 
     - name: Deploy to Kubernetes
       run: |
-        kubectl apply -f k8s/deployment.yaml --validate=false  # Deploy the app to Kubernetes using the deployment YAML file
-        kubectl apply -f k8s/service.yaml --validate=false  # Apply service YAML to expose the app
+        kubectl apply -f k8s/deployment.yaml --validate=false
+        kubectl apply -f k8s/service.yaml --validate=false
 
     - name: Verify Deployment
-      run: kubectl get pods  # Verify the deployment by listing the pods
+      run: kubectl get pods
