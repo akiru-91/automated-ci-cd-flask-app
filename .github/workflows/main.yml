@@ -59,7 +59,8 @@ jobs:
     - name: Authenticate with Kubernetes Cluster
       run: |
         mkdir -p ~/.kube  # Ensure the .kube directory exists
-        echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config  # Write the Kubeconfig file
+        echo "${{ secrets.KUBECONFIG_CONTENT }}" | base64 --decode > ~/.kube/config  # Decode and write kubeconfig
+
 
     - name: Deploy to Kubernetes
       run: |
