@@ -51,7 +51,7 @@ jobs:
           version: 'latest'
 
       - name: List files in k8s directory
-        run: ls -R
+        run: ls -R k8s/
 
       - name: Authenticate with Kubernetes Cluster
         run: |
