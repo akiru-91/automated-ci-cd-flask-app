@@ -7,5 +7,6 @@ spec:
     app: flask-app
   ports:
     - protocol: TCP
-      port: 80  # Port accessible from outside the cluster
-      targetPort: 5000  # The internal port on which Flask is running
+      port: 80  # The external port
+      targetPort: 5000  # The internal port the Flask app is listening on
+  type: ClusterIP
