@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use self-hosted runner for this job
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
@@ -38,7 +38,7 @@ jobs:
         path: flask-app.tar
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use self-hosted runner for this job
     needs: build
     steps:
     - name: Pull Docker image
@@ -50,7 +50,7 @@ jobs:
         docker run --rm akiru091/flask-app:latest pytest src/
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use self-hosted runner for this job
     needs: [build, test]
     steps:
     - name: Checkout code
