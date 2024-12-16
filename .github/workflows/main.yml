@@ -73,12 +73,12 @@ jobs:
       with:
         version: 'latest'
 
-    - name: Download Docker image tar
+    - name: Download and load Docker image
       uses: actions/download-artifact@v3
       with:
         name: flask-app-image
 
-    - name: Load Docker image
+    - name: Load Docker image into Kind
       run: |
         docker load -i flask-app.tar
 
@@ -94,12 +94,19 @@ jobs:
     - name: Verify Deployment
       run: |
         kubectl get pods --context kind-ci-cluster
-        kubectl describe pods flask-app-$(kubectl get pods --context kind-ci-cluster -o=jsonpath='{.items[0].metadata.name}')
-      
-    - name: Check Kubernetes Events
-      run: |
-        kubectl get events --context kind-ci-cluster --sort-by='.lastTimestamp'
 
-    - name: Inspect Pod Logs
+    - name: Wait for Pod to be Ready
       run: |
-        kubectl logs -l app=flask-app --context kind-ci-cluster
+        kubectl wait --for=condition=ready pod -l app=flask-app --timeout=60s --context kind-ci-cluster
+        kubectl get pods --context kind-ci-cluster
+
+    - name: Get Logs from Pod
+      run: |
+        POD_NAME=$(kubectl get pods -l app=flask-app --context kind-ci-cluster -o jsonpath='{.items[0].metadata.name}')
+        kubectl logs $POD_NAME --context kind-ci-cluster
+
+    - name: Expose the Flask app (Optional)
+      run: |
+        kubectl port-forward service/flask-app-service 5000:5000 --context kind-ci-cluster &
+        sleep 5  # Give it a few seconds for the service to be exposed
+        curl http://localhost:5000  # Test if the app is working
