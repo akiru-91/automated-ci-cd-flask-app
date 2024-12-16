@@ -7,6 +7,6 @@ spec:
     app: flask-app
   ports:
     - protocol: TCP
-      port: 80  # The external port
-      targetPort: 5000  # The internal port the Flask app is listening on
-  type: ClusterIP
+      port: 80
+      targetPort: 5000  # Match with the Flask app port inside the container
+  type: ClusterIP  # You can change this to LoadBalancer if you want external access
