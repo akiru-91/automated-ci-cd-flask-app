@@ -110,3 +110,4 @@ jobs:
         kubectl port-forward service/flask-app-service 5000:80 --context kind-ci-cluster &
         sleep 5  # Give it a few seconds for the service to be exposed
         curl http://localhost:5000  # Test if the app is working
+
