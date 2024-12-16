@@ -10,7 +10,7 @@ spec:
   template:
     metadata:
       labels:
-        app: flask-app  # This ensures the pods are labeled with "app=flask-app"
+        app: flask-app
     spec:
       containers:
         - name: flask-app
