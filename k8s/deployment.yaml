@@ -2,31 +2,18 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: flask-app
-  labels:
-    app: flask-app
 spec:
-  replicas: 1  # Number of pods to run (you can increase it for scaling)
+  replicas: 1
   selector:
     matchLabels:
       app: flask-app
   template:
     metadata:
       labels:
-        app: flask-app
+        app: flask-app  # This ensures the pods are labeled with "app=flask-app"
     spec:
       containers:
-      - name: flask-app
-        image: akiru091/flask-app:latest  # Your Docker image
-        ports:
-        - containerPort: 5000  # Flask's default port
-        env:
-        - name: FLASK_ENV
-          value: "development"  # Optional: Flask environment variable
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-      restartPolicy: Always
+        - name: flask-app
+          image: akiru091/flask-app:latest
+          ports:
+            - containerPort: 5000
