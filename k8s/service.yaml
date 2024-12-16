@@ -4,10 +4,10 @@ metadata:
   name: flask-app-service
 spec:
   selector:
-    app: flask-app  # Match the label defined in the Deployment file
+    app: flask-app
   ports:
     - protocol: TCP
       port: 80        # The port exposed by the service inside the cluster
-      targetPort: 5000 # The port on the container running Flask
+      targetPort: 5000 # The port on the container where Flask is running
       nodePort: 30001  # The external port on the Kubernetes node (your local machine)
-  type: NodePort  # Exposes the service outside of the cluster
+  type: NodePort      # Exposes the service outside of the cluster
