@@ -40,7 +40,7 @@ jobs:
         run: |
           docker build -t akiru091/flask-app:latest .
           docker push akiru091/flask-app:latest
-
+          
   deploy:
     runs-on: ubuntu-latest
     needs: build
@@ -52,6 +52,10 @@ jobs:
 
       - name: Authenticate with Kubernetes Cluster
         run: |
+          # Ensure the .kube directory exists
+          mkdir -p ~/.kube
+
+          # Write kubeconfig content into the file
           echo "${{ secrets.KUBECONFIG_CONTENT }}" > ~/.kube/config
 
       - name: Deploy to Kubernetes
